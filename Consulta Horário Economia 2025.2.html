@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Horário de Aulas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <div class="container mx-auto p-4 sm:p-6 md:p-8 max-w-4xl">
+        <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+            <header class="text-center mb-8">
+                <h1 class="text-3xl sm:text-4xl font-bold text-blue-600">Consulta de Horários</h1>
+                <p class="text-gray-500 mt-2">Digite o dia da semana e o período para encontrar as disciplinas.</p>
+            </header>
+
+            <!-- Formulário de busca -->
+            <div class="flex flex-col sm:flex-row gap-4 mb-8">
+                <div class="flex-grow">
+                    <label for="dia-semana" class="block text-sm font-medium text-gray-700 mb-1">Dia da Semana</label>
+                    <input type="text" id="dia-semana" placeholder="Ex: segunda-feira, terça..." class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
+                </div>
+                <div class="w-full sm:w-40">
+                    <label for="periodo" class="block text-sm font-medium text-gray-700 mb-1">Período</label>
+                    <input type="number" id="periodo" min="1" max="10" placeholder="Ex: 1, 2..." class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
+                </div>
+                <div class="self-end">
+                     <button id="buscar-btn" class="w-full sm:w-auto bg-blue-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200 shadow-md">
+                        Buscar
+                    </button>
+                </div>
+            </div>
+
+            <!-- Área de Resultados -->
+            <div id="resultado">
+                 <div class="text-center text-gray-500 py-8">
+                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <h3 class="mt-2 text-sm font-medium text-gray-900">Aguardando sua busca</h3>
+                    <p class="mt-1 text-sm text-gray-500">Insira um dia e período para começar.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Base de Dados das Disciplinas ---
+        // Dados atualizados com base nas imagens fornecidas pelo usuário.
+        const cronograma = [
+            // --- SEGUNDA-FEIRA ---
+            { periodo: 1, dia: "segunda", horario: "18:00 - 20:00", disciplina: "IM226 - INTRODUÇÃO À SOCIOLOGIA", professor: "ANA LUCIA LUCAS MARTINS", sala: "203.M" },
+            { periodo: 1, dia: "segunda", horario: "20:00 - 22:00", disciplina: "TM901 - INTRODUÇÃO À ECONOMIA", professor: "ELISA ALONSO MONCORES VIANA", sala: "203.M" },
+            { periodo: 2, dia: "segunda", horario: "18:00 - 22:00", disciplina: "IM420 - MATEMÁTICA PARA ECONOMIA 2", professor: "A DEFINIR", sala: "309.M" },
+            { periodo: 3, dia: "segunda", horario: "18:00 - 20:00", disciplina: "TM918 - FORMAÇÃO ECONÔMICA DO BRASIL", professor: "ELISA ALONSO MONCORES VIANA", sala: "202.A" },
+            { periodo: 3, dia: "segunda", horario: "20:00 - 22:00", disciplina: "IM421 - MATEMÁTICA PARA ECONOMIA 3", professor: "MARCELLO FIDELIS", sala: "202.A" },
+            { periodo: 4, dia: "segunda", horario: "18:00 - 22:00", disciplina: "IM423 - ESTATÍSTICA I", professor: "ROSEMBERG CARLOS VICENTE", sala: "302.B" },
+            { periodo: 5, dia: "segunda", horario: "18:00 - 22:00", disciplina: "TM920 - ECONOMIA BRASILEIRA II", professor: "BETTY NOGUEIRA ROCHA", sala: "303.B" },
+            { periodo: 6, dia: "segunda", horario: "18:00 - 22:00", disciplina: "TM921 - DESENVOLVIMENTO SOCIOECONÔMICO", professor: "ROBSON DIAS DA SILVA", sala: "302.A" },
+            { periodo: 7, dia: "segunda", horario: "18:00 - 22:00", disciplina: "TM958 - TÓPICOS ESPECIAIS EM HISTÓRIA", professor: "CLARICE MENEZES VIEIRA", sala: "301.B" },
+            { periodo: 8, dia: "segunda", horario: "18:00 - 22:00", disciplina: "TM958 - TÓPICOS ESPECIAIS EM HISTÓRIA", professor: "CLARICE MENEZES VIEIRA", sala: "301.B" },
+            { periodo: 9, dia: "segunda", horario: "18:00 - 20:00", disciplina: "IM309 - DIREITO", professor: "EDUARDO STELMANN GAMBOA JUNIOR", sala: "202.I" },
+            { periodo: 9, dia: "segunda", horario: "20:00 - 22:00", disciplina: "IM147 - FILOSOFIA E ÉTICA NAS ORGANIZAÇÕES", professor: "LEANDRO PINHEIRO CHEVITARESE", sala: "202.I" },
+
+            // --- TERÇA-FEIRA ---
+            { periodo: 1, dia: "terca", horario: "18:00 - 20:00", disciplina: "IM307 - CONTABILIDADE GERAL T02", professor: "ELIANE CORTES BRAGA", sala: "203.M" },
+            { periodo: 1, dia: "terca", horario: "20:00 - 22:00", disciplina: "IM453 - MATEMÁTICA PARA ECONOMIA 1", professor: "MARCIO ANDERSON DE SA PEREIRA", sala: "203.M" },
+            { periodo: 2, dia: "terca", horario: "18:00 - 22:00", disciplina: "TM906 - MICROECONOMIA I", professor: "EDUARDO MARTINS MORAIS", sala: "309.M" },
+            { periodo: 3, dia: "terca", horario: "18:00 - 22:00", disciplina: "TM907 - MICROECONOMIA II", professor: "WELINTON CONTE FERREIRA", sala: "202.A" },
+            { periodo: 4, dia: "terca", horario: "18:00 - 22:00", disciplina: "TM908 - MICROECONOMIA III", professor: "ISRAEL SANCHES MARCELLINO", sala: "302.B" },
+            { periodo: 5, dia: "terca", horario: "18:00 - 22:00", disciplina: "TM910 - ECONOMIA INDUSTRIAL", professor: "GEORGES GERARD FLEXOR", sala: "303.B" },
+            { periodo: 6, dia: "terca", horario: "18:00 - 22:00", disciplina: "TM915 - ECONOMIA DO SETOR PÚBLICO", professor: "LEANDRO DA SILVA FAGUNDES", sala: "302.A" },
+            { periodo: 7, dia: "terca", horario: "18:00 - 22:00", disciplina: "IM655 - FINANÇAS INTERNACIONAIS", professor: "ELENA SOIHET", sala: "301.B" },
+            { periodo: 8, dia: "terca", horario: "18:00 - 22:00", disciplina: "IM655 - FINANÇAS INTERNACIONAIS", professor: "ELENA SOIHET", sala: "301.B" },
+            
+            // --- QUARTA-FEIRA ---
+            { periodo: 1, dia: "quarta", horario: "18:00 - 20:00", disciplina: "IM226 - INTRODUÇÃO À SOCIOLOGIA", professor: "ANA LUCIA LUCAS MARTINS", sala: "203.M" },
+            { periodo: 1, dia: "quarta", horario: "20:00 - 22:00", disciplina: "IM453 - MATEMÁTICA PARA ECONOMIA 1", professor: "MARCIO ANDERSON DE SA PEREIRA", sala: "203.M" },
+            { periodo: 2, dia: "quarta", horario: "18:00 - 22:00", disciplina: "TM917 - HISTÓRICA ECONÔMICA GERAL", professor: "ROBSON DIAS DA SILVA", sala: "309.M" },
+            { periodo: 3, dia: "quarta", horario: "18:00 - 22:00", disciplina: "TM912 - ECONOMIA POLÍTICA II", professor: "DANIEL SENNA DIAS", sala: "202.A" },
+            { periodo: 4, dia: "quarta", horario: "18:00 - 22:00", disciplina: "TM919 - ECONOMIA BRASILEIRA I", professor: "ADRIANNO OLIVEIRA RODRIGUES", sala: "302.B" },
+            { periodo: 5, dia: "quarta", horario: "18:00 - 22:00", disciplina: "TM914 - ECONOMIA MONETÁRIA I", professor: "ELENA SOIHET", sala: "303.B" },
+            { periodo: 6, dia: "quarta", horario: "18:00 - 22:00", disciplina: "TM922 - TÉCNICAS DE PESQUISA E METODOLOGIA", professor: "MARIO MOTTA DE ALMEIDA MAXIMO", sala: "302.A" },
+            { periodo: 7, dia: "quarta", horario: "18:00 - 22:00", disciplina: "TM942 - ECONOMIA DA ENERGIA", professor: "WELINTON CONTE FERREIRA", sala: "301.B" },
+            { periodo: 8, dia: "quarta", horario: "18:00 - 22:00", disciplina: "TM942 - ECONOMIA DA ENERGIA", professor: "WELINTON CONTE FERREIRA", sala: "301.B" },
+            { periodo: 9, dia: "quarta", horario: "18:00 - 20:00", disciplina: "IM147 - FILOSOFIA E ETICA NAS ORGANIZACOES", professor: "LEANDRO PINHEIRO CHEVITARESE", sala: "202.I" },
+            { periodo: 9, dia: "quarta", horario: "20:00 - 22:00", disciplina: "IM309 - DIREITO", professor: "EDUARDO STELMANN GAMBOA JUNIOR", sala: "202.I" },
+            
+            // --- QUINTA-FEIRA --- (Dados idênticos aos de Quarta, conforme imagens)
+            { periodo: 1, dia: "quinta", horario: "18:00 - 20:00", disciplina: "IM226 - INTRODUÇÃO À SOCIOLOGIA", professor: "ANA LUCIA LUCAS MARTINS", sala: "203.M" },
+            { periodo: 1, dia: "quinta", horario: "20:00 - 22:00", disciplina: "IM453 - MATEMÁTICA PARA ECONOMIA 1", professor: "MARCIO ANDERSON DE SA PEREIRA", sala: "203.M" },
+            { periodo: 2, dia: "quinta", horario: "18:00 - 22:00", disciplina: "TM917 - HISTÓRICA ECONÔMICA GERAL", professor: "ROBSON DIAS DA SILVA", sala: "309.M" },
+            { periodo: 3, dia: "quinta", horario: "18:00 - 22:00", disciplina: "TM912 - ECONOMIA POLÍTICA II", professor: "DANIEL SENNA DIAS", sala: "202.A" },
+            { periodo: 4, dia: "quinta", horario: "18:00 - 22:00", disciplina: "TM919 - ECONOMIA BRASILEIRA I", professor: "ADRIANNO OLIVEIRA RODRIGUES", sala: "302.B" },
+            { periodo: 5, dia: "quinta", horario: "18:00 - 22:00", disciplina: "TM914 - ECONOMIA MONETÁRIA I", professor: "ELENA SOIHET", sala: "303.B" },
+            { periodo: 6, dia: "quinta", horario: "18:00 - 22:00", disciplina: "TM922 - TÉCNICAS DE PESQUISA E METODOLOGIA", professor: "MARIO MOTTA DE ALMEIDA MAXIMO", sala: "302.A" },
+            { periodo: 7, dia: "quinta", horario: "18:00 - 22:00", disciplina: "TM942 - ECONOMIA DA ENERGIA", professor: "WELINTON CONTE FERREIRA", sala: "301.B" },
+            { periodo: 8, dia: "quinta", horario: "18:00 - 22:00", disciplina: "TM942 - ECONOMIA DA ENERGIA", professor: "WELINTON CONTE FERREIRA", sala: "301.B" },
+            { periodo: 9, dia: "quinta", horario: "18:00 - 20:00", disciplina: "IM147 - FILOSOFIA E ETICA NAS ORGANIZACOES", professor: "LEANDRO PINHEIRO CHEVITARESE", sala: "202.I" },
+            { periodo: 9, dia: "quinta", horario: "20:00 - 22:00", disciplina: "IM309 - DIREITO", professor: "EDUARDO STELMANN GAMBOA JUNIOR", sala: "202.I" },
+
+            // --- SEXTA-FEIRA ---
+            { periodo: 1, dia: "sexta", horario: "18:00 - 22:00", disciplina: "IM301 - INTRODUÇÃO À ADMINISTRAÇÃO", professor: "CARLOS HENRIQUE BERRINI DA CUNHA", sala: "203.M" },
+            { periodo: 2, dia: "sexta", horario: "18:00 - 22:00", disciplina: "TM902 - MACROECONOMIA I", professor: "DANIELE DA ROCHA FARIA", sala: "309.M" },
+            { periodo: 3, dia: "sexta", horario: "18:00 - 22:00", disciplina: "TM903 - MACROECONOMIA II", professor: "LUCAS ANTUNES POVOA", sala: "202.A" },
+            { periodo: 4, dia: "sexta", horario: "18:00 - 22:00", disciplina: "TM904 - MACROECONOMIA III", professor: "DANIEL SENNA DIAS", sala: "302.B" },
+            { periodo: 5, dia: "sexta", horario: "18:00 - 22:00", disciplina: "IM424 - ESTATÍSTICA II", professor: "ROSEMBERG CARLOS VICENTE", sala: "303.B" },
+            { periodo: 6, dia: "sexta", horario: "18:00 - 22:00", disciplina: "TM909 - ECONOMETRIA I", professor: "JULIO CEZAR RUSSO PINTO DA SILVA", sala: "302.A" }
+        ];
+
+
+        // --- Lógica da Aplicação ---
+        const diaInput = document.getElementById('dia-semana');
+        const periodoInput = document.getElementById('periodo');
+        const buscarBtn = document.getElementById('buscar-btn');
+        const resultadoDiv = document.getElementById('resultado');
+
+        // Função para normalizar o nome do dia da semana
+        function normalizarDia(dia) {
+            return dia.toLowerCase()
+                .replace('-feira', '')
+                .replace('ç', 'c')
+                .replace('á', 'a')
+                .trim();
+        }
+
+        // Função para renderizar os resultados
+        function renderizarResultados(resultados, diaBusca, periodoBusca) {
+            resultadoDiv.innerHTML = ''; // Limpa resultados anteriores
+
+            if (resultados.length === 0) {
+                resultadoDiv.innerHTML = `
+                    <div class="text-center bg-yellow-50 border-l-4 border-yellow-400 text-yellow-700 p-4 rounded-lg">
+                        <p class="font-bold">Nenhuma disciplina encontrada</p>
+                        <p>Verifique o dia da semana e o período digitados.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const diaFormatado = diaBusca.charAt(0).toUpperCase() + diaBusca.slice(1);
+
+            const headerHTML = `
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800">Horário para ${diaFormatado}-feira</h2>
+                    <p class="text-gray-600">${periodoBusca}º Período</p>
+                </div>
+            `;
+
+            const cardsHTML = resultados.map(aula => `
+                <div class="bg-white border border-gray-200 rounded-xl p-5 mb-4 shadow-sm hover:shadow-md transition-shadow duration-300">
+                    <div class="flex flex-col sm:flex-row justify-between sm:items-center">
+                        <div class="mb-4 sm:mb-0">
+                            <p class="text-lg font-semibold text-blue-700">${aula.disciplina}</p>
+                            <p class="text-sm text-gray-500">${aula.professor}</p>
+                        </div>
+                        <div class="flex items-center gap-4 text-right">
+                            <div class="text-sm">
+                                <p class="font-medium text-gray-800">${aula.horario}</p>
+                                <p class="text-gray-500">Horário</p>
+                            </div>
+                             <div class="text-sm">
+                                <p class="font-medium text-gray-800">${aula.sala}</p>
+                                <p class="text-gray-500">Sala</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            resultadoDiv.innerHTML = headerHTML + '<div class="space-y-4">' + cardsHTML + '</div>';
+        }
+
+        // Função principal de busca
+        function buscarHorario() {
+            const dia = normalizarDia(diaInput.value);
+            const periodo = parseInt(periodoInput.value, 10);
+
+            if (!dia || isNaN(periodo)) {
+                resultadoDiv.innerHTML = `
+                     <div class="text-center bg-red-50 border-l-4 border-red-400 text-red-700 p-4 rounded-lg">
+                        <p class="font-bold">Entrada inválida</p>
+                        <p>Por favor, preencha o dia da semana e o período.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const resultadosFiltrados = cronograma.filter(aula => {
+                // Combina aulas com o mesmo horário
+                if (aula.horario === "18:00 - 22:00") {
+                    return aula.periodo === periodo && aula.dia === dia;
+                }
+                return aula.periodo === periodo && aula.dia === dia;
+            });
+
+            renderizarResultados(resultadosFiltrados, dia, periodo);
+        }
+
+        // Adiciona os event listeners
+        buscarBtn.addEventListener('click', buscarHorario);
+        
+        // Permite buscar pressionando Enter nos campos de texto
+        diaInput.addEventListener('keyup', (event) => {
+            if (event.key === 'Enter') {
+                buscarHorario();
+            }
+        });
+        periodoInput.addEventListener('keyup', (event) => {
+            if (event.key === 'Enter') {
+                buscarHorario();
+            }
+        });
+
+    </script>
+</body>
+</html>
+
