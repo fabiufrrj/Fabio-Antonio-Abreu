@@ -13,6 +13,13 @@
             color: #2563eb;
             background-color: #eff6ff;
         }
+        /* Garantir que a imagem apareça bem em dispositivos móveis */
+        .logo-container img {
+            max-height: 120px;
+            width: auto;
+            display: block;
+            margin: 0 auto;
+        }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800 flex flex-col min-h-screen">
@@ -20,23 +27,27 @@
     <div class="container mx-auto p-4 sm:p-6 max-w-4xl flex-grow">
         <div class="bg-white rounded-2xl shadow-xl p-4 sm:p-8">
             <header class="text-center mb-8">
-                <div class="flex justify-center items-center mb-4">
-                    <div class="bg-blue-600 p-3 rounded-full shadow-lg">
-                        <svg class="h-8 w-8 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
-                        </svg>
-                    </div>
+                <!-- LOGOTIPO VIA GOOGLE DRIVE -->
+                <div class="logo-container flex justify-center items-center mb-4">
+                    <!-- Tentei usar o formato de thumbnail do Google Drive que é mais estável para exibição -->
+                    <img src="https://drive.google.com/thumbnail?id=17EWaESbxJ4cieNCigMB5y0ZisUpfXtIP&sz=w1000" 
+                         alt="Logotipo Economia"
+                         onerror="this.onerror=null; this.src='https://placehold.co/400x150?text=Erro+no+Link+do+Drive+-+Verifique+Permissões';">
                 </div>
+                
                 <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Consulta de Horários 2026.1</h1>
                 <p class="text-gray-500 mt-1 text-sm sm:text-base">Graduação em Ciências Econômicas</p>
             </header>
 
+            <!-- Abas de Navegação -->
             <div class="mb-6 flex border-b border-gray-200">
                 <button id="tab-turma" class="tab-btn active flex-1 font-semibold px-4 py-3 text-sm transition-all border-b-2">Por Turma</button>
                 <button id="tab-professor" class="tab-btn flex-1 font-semibold px-4 py-3 text-sm text-gray-500 hover:text-gray-700 transition-all border-b-2 border-transparent">Por Professor</button>
             </div>
 
+            <!-- Painéis de Busca -->
             <div class="space-y-6">
+                <!-- Painel Turma -->
                 <div id="panel-turma" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Dia da Semana</label>
@@ -64,6 +75,7 @@
                     </div>
                 </div>
 
+                <!-- Painel Professor -->
                 <div id="panel-professor" class="hidden">
                     <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Escolha o Professor</label>
                     <select id="select-professor" class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
@@ -75,12 +87,14 @@
                 </button>
             </div>
 
+            <!-- Área de Resultados -->
             <div id="resultado" class="mt-8 min-h-[100px]">
                 <div class="text-center text-gray-400 py-10 border-2 border-dashed border-gray-100 rounded-2xl">
                     <p>Selecione os filtros acima para visualizar as aulas.</p>
                 </div>
             </div>
 
+            <!-- Link Documento Completo -->
             <div class="mt-10 pt-8 border-t border-gray-100 text-center">
                 <p class="text-sm text-gray-500 mb-4 font-medium">Link para consulta do horário completo:</p>
                 <a href="https://docs.google.com/document/d/15p4vadvF__tu0m9XhfaLkt4QMKVN-2kufQfvjDimpZk/edit?usp=sharing" target="_blank" class="inline-flex items-center gap-2 bg-green-50 text-green-700 font-bold px-6 py-3 rounded-full hover:bg-green-100 transition-colors">
@@ -93,7 +107,7 @@
     
     <footer class="text-center py-6">
         <p class="text-[10px] sm:text-xs text-gray-400 uppercase tracking-widest">
-            Desenvolvido por Fabio Antonio Abre com o uso do GEMINI
+            Desenvolvido por Fabio Antonio Abreu com o uso do GEMINI
         </p>
     </footer>
 
@@ -172,8 +186,21 @@
 
         let activeTab = 'turma';
 
-        tabTurma.onclick = () => { activeTab = 'turma'; tabTurma.className = 'tab-btn active flex-1 font-semibold px-4 py-3 text-sm transition-all border-b-2'; tabProfessor.className = 'tab-btn flex-1 font-semibold px-4 py-3 text-sm text-gray-500 hover:text-gray-700 transition-all border-b-2 border-transparent'; panelTurma.classList.remove('hidden'); panelProfessor.classList.add('hidden'); };
-        tabProfessor.onclick = () => { activeTab = 'professor'; tabProfessor.className = 'tab-btn active flex-1 font-semibold px-4 py-3 text-sm transition-all border-b-2'; tabTurma.className = 'tab-btn flex-1 font-semibold px-4 py-3 text-sm text-gray-500 hover:text-gray-700 transition-all border-b-2 border-transparent'; panelProfessor.classList.remove('hidden'); panelTurma.classList.add('hidden'); };
+        tabTurma.onclick = () => { 
+            activeTab = 'turma'; 
+            tabTurma.className = 'tab-btn active flex-1 font-semibold px-4 py-3 text-sm transition-all border-b-2'; 
+            tabProfessor.className = 'tab-btn flex-1 font-semibold px-4 py-3 text-sm text-gray-500 hover:text-gray-700 transition-all border-b-2 border-transparent'; 
+            panelTurma.classList.remove('hidden'); 
+            panelProfessor.classList.add('hidden'); 
+        };
+
+        tabProfessor.onclick = () => { 
+            activeTab = 'professor'; 
+            tabProfessor.className = 'tab-btn active flex-1 font-semibold px-4 py-3 text-sm transition-all border-b-2'; 
+            tabTurma.className = 'tab-btn flex-1 font-semibold px-4 py-3 text-sm text-gray-500 hover:text-gray-700 transition-all border-b-2 border-transparent'; 
+            panelProfessor.classList.remove('hidden'); 
+            panelTurma.classList.add('hidden'); 
+        };
 
         function cap(s) { return s.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' '); }
 
